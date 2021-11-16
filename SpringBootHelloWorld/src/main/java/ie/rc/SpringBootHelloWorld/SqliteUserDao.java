@@ -8,8 +8,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
 
-// comment to prove that github is working
+
 public class SqliteUserDao implements UserDao {
 
 	private String url = "jdbc:sqlite:C:/data/rcnov2021/userdb.db";
@@ -23,40 +24,42 @@ public class SqliteUserDao implements UserDao {
 			e.printStackTrace();
 		}
 	}
-	
+
+	@Override
 	public User getUser(int id) throws UserDaoException {
-		
+
 		User user = null;
-		
+
 		String sql = "select * from users where id = ?";
-		
+
 		try {
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, id);
-			
+
 			ResultSet rs = stmt.executeQuery();
-			
+
 			if (rs.next()) {
-				//int id = rs.getInt("id");
+				// int id = rs.getInt("id");
 				String name = rs.getString("name");
 				String email = rs.getString("email");
 				boolean active = rs.getBoolean("active");
-				
+
 				user = new User(id, name, email, active);
-				
+
 			} else {
 				throw new UserDaoException("User not found");
 			}
 			rs.close();
 			stmt.close();
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return user;
 	}
-	
-	// List<User> getUsers()
+
+
+	@Override
 	public List<User> getUsers() {
 
 		List<User> users = new ArrayList<>();
@@ -73,7 +76,7 @@ public class SqliteUserDao implements UserDao {
 				String name = rs.getString("name");
 				String email = rs.getString("email");
 				boolean active = rs.getBoolean("active");
-				
+
 				User u = new User(id, name, email, active);
 				users.add(u);
 			}
@@ -87,86 +90,94 @@ public class SqliteUserDao implements UserDao {
 		return users;
 	}
 
-	// User getUser(id)
+	@Override
+	public User addUser(User newUser) {
+		try {
 
-	// User addUser(UserToAdd)
-	   public User addUser(User newUser) {
-	        try {
+			String sql = "insert into users (name, email, active) values(?, ?, ?)";
 
-	            String sql = "insert into users (name, email, active) values(?, ?, ?)";
+			PreparedStatement stmt = conn.prepareStatement(sql);
 
-	            PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, newUser.getName());
+			stmt.setString(2, newUser.getEmail());
+			stmt.setInt(3, newUser.isActive() ? 1 : 0);
 
-	            stmt.setString(1, newUser.getName());
-	            stmt.setString(2, newUser.getEmail());
-	            stmt.setInt(3, newUser.isActive() ? 1 : 0);
+			stmt.executeUpdate();
+			stmt.close();
 
-	            stmt.executeUpdate();
-	            stmt.close();
+			// read the newly created id
+			sql = "select last_insert_rowid();";
+			stmt = conn.prepareStatement(sql);
 
-	            // read the newly created id
-	            sql = "select last_insert_rowid();";
-	            stmt = conn.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery();
 
-	            ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				int id = rs.getInt(1);
+				newUser.setId(id);
+			}
+			rs.close();
 
-	            if (rs.next()) {
-	                int id = rs.getInt(1);
-	                newUser.setId(id);
-	            }
-	            rs.close();
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+		return newUser;
 
-	        } catch (SQLException throwables) {
-	            throwables.printStackTrace();
-	        }
-	        return newUser;
+	}
 
-	    }
+	@Override
+	public User updateUser(User userToUpdate) {
 
-	// User updateUser(UserToUpdate)
-	    public User updateUser(User userToUpdate) {
+		try {
+			String sql = "update users set name = ?, email = ?, active = ? where id = ?";
 
-	        try {
-	            String sql = "update users set name = ?, email = ?, active = ? where id = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
 
-	            PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, userToUpdate.getName());
+			stmt.setString(2, userToUpdate.getEmail());
+			stmt.setInt(3, userToUpdate.isActive() ? 1 : 0);
+			stmt.setInt(4, userToUpdate.getId());
 
-	            stmt.setString(1, userToUpdate.getName());
-	            stmt.setString(2, userToUpdate.getEmail());
-	            stmt.setInt(3, userToUpdate.isActive() ? 1 : 0);
-	            stmt.setInt(4, userToUpdate.getId());
+			stmt.executeUpdate();
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+		return userToUpdate;
+	}
 
-	            stmt.executeUpdate();
-	        } catch (SQLException throwables) {
-	            throwables.printStackTrace();
-	        }
-	        return userToUpdate;
-	    }
-	// void deleteUser(id)
-	    public void deleteUser(int id) throws UserDaoException {
+	@Override
+	public void deleteUser(int id) throws UserDaoException {
 
-	        PreparedStatement stmt = null;
-	        try {
-	            String sql = "delete from users where id = ?";
-	            stmt = conn.prepareStatement(sql);
-	            stmt.setInt(1, id);
+		PreparedStatement stmt = null;
+		try {
+			String sql = "delete from users where id = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, id);
 
-	            int n = stmt.executeUpdate();
+			int n = stmt.executeUpdate();
 
-	            if (n == 0) {
-	                throw new UserDaoException("No records deleted");
-	            }
+			if (n == 0) {
+				throw new UserDaoException("No records deleted");
+			}
 
-	        } catch (SQLException throwables) {
-	            throwables.printStackTrace();
-	        } finally {
-	            System.out.println("finally called(deleteUser)");
-	            try {
-	                stmt.close();
-	            } catch (SQLException throwables) {
-	                throwables.printStackTrace();
-	            }
-	        }
-	    }
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		} finally {
+			System.out.println("finally called(deleteUser)");
+			try {
+				stmt.close();
+			} catch (SQLException throwables) {
+				throwables.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void close() {
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 }

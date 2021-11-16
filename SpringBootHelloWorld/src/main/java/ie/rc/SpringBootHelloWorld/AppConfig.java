@@ -21,7 +21,7 @@ public class AppConfig {
 		return "This is string 2";
 	}
 	
-	@Bean
+	
 	public UserDao getDao() {
 		
 		//return new InMemoryUserDao();

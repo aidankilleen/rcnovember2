@@ -34,6 +34,16 @@ public class SpringBootHelloWorldApplication implements CommandLineRunner {
 		
 		System.out.println("Database test...");
 		
+		List<User> users = dao.getUsers();
+		
+		for (User u: users) {
+			
+			System.out.println(u);
+			
+		}
+				
+		
+		
 		// no need to instantiate dao - it will be autowired
 		//SqliteUserDao dao = new SqliteUserDao();
 		
@@ -44,7 +54,7 @@ public class SpringBootHelloWorldApplication implements CommandLineRunner {
 		//System.out.println(addedUser);
 		
 		
-		
+		/*
 		
 		User u1 = dao.getUser(1);
 		
@@ -60,16 +70,9 @@ public class SpringBootHelloWorldApplication implements CommandLineRunner {
 		
 		
 		dao.deleteUser(1);
+		*/
 		
-		
-		List<User> users = dao.getUsers();
-		
-		for (User u: users) {
-			
-			System.out.println(u);
-			
-		}
-		
+
 		
 		/*
 		String url = "jdbc:sqlite:C:/data/rcnov2021/userdb.db";

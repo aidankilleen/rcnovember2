@@ -9,5 +9,5 @@ public interface UserDao {
 	User addUser(User userToAdd);
 	User updateUser(User userToUpdate);
 	void deleteUser(int id) throws UserDaoException;
-
+	void close();
 }

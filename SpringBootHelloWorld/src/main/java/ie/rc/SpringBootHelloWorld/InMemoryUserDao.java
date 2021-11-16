@@ -3,6 +3,9 @@ package ie.rc.SpringBootHelloWorld;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+
 public class InMemoryUserDao implements UserDao {
 
 	private List<User> users = new ArrayList<>();
@@ -59,9 +62,7 @@ public class InMemoryUserDao implements UserDao {
 
         try {
             int index = findIndex(userToUpdate.getId());
-
             users.set(index, userToUpdate);
-
         } catch (UserDaoException e) {
 
         }
@@ -75,4 +76,9 @@ public class InMemoryUserDao implements UserDao {
         int index = findIndex(id);
         users.remove(index);
     }
+
+	@Override
+	public void close() {
+		users.clear();
+	}
 }
