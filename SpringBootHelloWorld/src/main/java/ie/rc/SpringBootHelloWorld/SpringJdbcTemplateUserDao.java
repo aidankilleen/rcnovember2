@@ -4,22 +4,24 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.sqlite.SQLiteDataSource;
 
-@Component
+@Repository
 public class SpringJdbcTemplateUserDao implements UserDao {
 	
-	private SQLiteDataSource ds;
+	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
 	public SpringJdbcTemplateUserDao() {
 		
-		ds = new SQLiteDataSource();
-		ds.setUrl("jdbc:sqlite:C:/data/rcnov2021/userdb.db");
+		//ds = new SQLiteDataSource();
+		//ds.setUrl("jdbc:sqlite:C:/data/rcnov2021/userdb.db");
 		
-		jdbcTemplate = new JdbcTemplate(ds);
+		//jdbcTemplate = new JdbcTemplate(ds);
 	}
 
 	@Override
@@ -27,7 +29,6 @@ public class SpringJdbcTemplateUserDao implements UserDao {
 		
 		List<User> users = jdbcTemplate.query(
 				"select * from users", new UserRowMapper());
-		
 		return users;
 	}
 
@@ -52,7 +53,6 @@ public class SpringJdbcTemplateUserDao implements UserDao {
 				userToAdd.isActive());
 		
 		// TODO - get the id of the new user
-		
 		return userToAdd;
 	}
 
@@ -64,7 +64,6 @@ public class SpringJdbcTemplateUserDao implements UserDao {
 				userToUpdate.getEmail(), 
 				userToUpdate.isActive(), 
 				userToUpdate.getId());
-		
 		
 		return userToUpdate;
 	}

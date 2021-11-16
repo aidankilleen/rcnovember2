@@ -16,14 +16,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class SpringBootHelloWorldApplication implements CommandLineRunner {
 
-	
 	@Autowired
-	private UserDao dao;
-	@Autowired
-	private TestBean tb;
-
-	@Autowired @Qualifier("s1")
-	private String s1;
+	private UserService userService;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBootHelloWorldApplication.class, args);
@@ -32,6 +26,43 @@ public class SpringBootHelloWorldApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		
+		userService.doSomethingWithUsers();
+		
+		
+		/*
+		 * Dependency Injection ONLY works on Spring-managed beans
+		 */
+		//UserService us = new UserService();
+		
+		//us.doSomethingWithUsers();
+		
+		
+		
+		
+		
+		// Without dependency injection / Inversion of Control
+		// create a datasource
+		//DataSource ds = new SQLiteDataSource();
+		//ds.seUrl(url);
+		
+		// create a jdbctemplate
+		//JdbcTemplate jdbc = new JdbcTemplate(ds;)
+		
+		// create a UserDao
+		//UserDao dao = new SqliteUserDao(jdbc);
+		
+		// create a UserService
+		//UserService userService = new UserService(dao)
+		
+		
+		// do something with the service
+		//userService.doSomethingWithUsers();
+		
+		
+		
+		
+		
+		/*
 		System.out.println("Database test...");
 		
 		// dao.deleteUser(7);
@@ -56,7 +87,7 @@ public class SpringBootHelloWorldApplication implements CommandLineRunner {
 			
 		}
 				
-		
+		*/
 		
 		// no need to instantiate dao - it will be autowired
 		//SqliteUserDao dao = new SqliteUserDao();
