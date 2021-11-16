@@ -34,6 +34,20 @@ public class SpringBootHelloWorldApplication implements CommandLineRunner {
 		
 		System.out.println("Database test...");
 		
+		// dao.deleteUser(7);
+		User newUser = new User("NEW", "new.user@gmail.com", false);
+		
+		dao.addUser(newUser);
+		
+		User u4 = dao.getUser(4);
+		
+		u4.setName("CHANGED");
+		u4.setEmail("changed@gmail.com");
+		u4.setActive(!u4.isActive());
+		dao.updateUser(u4);
+		
+		
+		
 		List<User> users = dao.getUsers();
 		
 		for (User u: users) {

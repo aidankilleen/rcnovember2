@@ -25,33 +25,56 @@ public class SpringJdbcTemplateUserDao implements UserDao {
 	@Override
 	public List<User> getUsers() {
 		
-		List<User> users = jdbcTemplate.query("select * from users", new UserRowMapper());
+		List<User> users = jdbcTemplate.query(
+				"select * from users", new UserRowMapper());
 		
 		return users;
 	}
 
 	@Override
 	public User getUser(int id) throws UserDaoException {
-		// TODO Auto-generated method stub
-		return null;
+	
+		try {
+			User user = jdbcTemplate.queryForObject(
+					"select * from users where id = ?",
+					new UserRowMapper(), id);
+			return user;
+		} catch (Exception ex) {
+			throw new UserDaoException("User not found");
+		}
 	}
 
 	@Override
 	public User addUser(User userToAdd) {
-		// TODO Auto-generated method stub
-		return null;
+		jdbcTemplate.update("insert into users (name, email, active) values(?, ?, ?)", 
+				userToAdd.getName(), 
+				userToAdd.getEmail(), 
+				userToAdd.isActive());
+		
+		// TODO - get the id of the new user
+		
+		return userToAdd;
 	}
 
 	@Override
 	public User updateUser(User userToUpdate) {
-		// TODO Auto-generated method stub
-		return null;
+	
+		jdbcTemplate.update("update users set name=?, email=?, active=? where id=?", 
+				userToUpdate.getName(), 
+				userToUpdate.getEmail(), 
+				userToUpdate.isActive(), 
+				userToUpdate.getId());
+		
+		
+		return userToUpdate;
 	}
 
 	@Override
 	public void deleteUser(int id) throws UserDaoException {
-		// TODO Auto-generated method stub
-
+		
+		if (jdbcTemplate.update("delete from users where id=?", id) == 0) {
+			throw new UserDaoException("no user deleted");
+		}
 	}
 
 	@Override
