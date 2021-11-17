@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+<h1>Edit User</h1>
+
+<p th:text="${user.name}"></p>
+
+<form action="/db/users/edit" method="post">
+
+	<input type="hidden" name="id" th:value="${user.id}" READONLY><br>
+	<input type="text" name="name" th:value="${user.name}"><br>
+	<input type="text" name="email" th:value="${user.email}"><br>
+
+	<input type="checkbox" name="active" th:checked="${user.active}"><br>
+
+	<input type="submit" name="submit" value="submit">
+</form>
+
+
+</body>
+</html>

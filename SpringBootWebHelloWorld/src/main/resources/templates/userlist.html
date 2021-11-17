@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+<h1>User List</h1>
+
+<a href="/db/users/add">Add User</a>
+
+<hr>
+
+<table>
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Active</th>
+		</tr>
+	</thead>
+	
+	<tbody>
+		<tr th:each="user: ${users}">
+
+			<td><a 
+				th:href="@{/db/users/{id}(id=${user.id})}" 
+				th:text="${user.id}"></a>
+			</td>
+			<td th:text="${user.name}"></td>
+			<td th:text="${user.email}"></td>
+			<td th:text="${user.active}"></td>
+			<td>
+				<a
+				th:href="@{/db/users/delete?id={id}(id=${user.id})}"
+				>Delete</a>
+			</td>
+			<td>
+				<a
+				th:href="@{/db/users/edit?id={id}(id=${user.id})}"
+				>Edit</a>
+			</td>			
+		</tr>
+	
+	</tbody>
+	
+
+</table>
+
+</body>
+</html>

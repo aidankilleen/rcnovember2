@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+Are you sure?
+
+<a th:href="@{/db/users/dodelete?answer=yes&id={id}(id=${id})}">Yes</a>
+<a th:href="@{/db/users/dodelete?answer=no&id={id}(id=${id})}">No</a>
+
+
+</body>
+</html>
