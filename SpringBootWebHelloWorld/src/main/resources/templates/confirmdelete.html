@@ -1,15 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<head th:replace="fragments/navigation :: htmlhead">
 </head>
 <body>
 
-Are you sure?
+<nav th:replace="fragments/navigation :: bootstrap-navigation"></nav>
 
-<a th:href="@{/db/users/dodelete?answer=yes&id={id}(id=${id})}">Yes</a>
-<a th:href="@{/db/users/dodelete?answer=no&id={id}(id=${id})}">No</a>
+<div class="container">
+
+	<div class="row">
+		<h3>Are you sure?</h3>
+
+		
+	</div>
+	
+	<div class="row">
+		<div class="col">
+			<a class="btn btn-danger" th:href="@{/db/users/dodelete?answer=yes&id={id}(id=${id})}">Yes</a>
+			<a class="btn btn-success" th:href="@{/db/users/dodelete?answer=no&id={id}(id=${id})}">No</a>
+		</div>
+		
+	
+	</div>
+</div>
 
 
 </body>

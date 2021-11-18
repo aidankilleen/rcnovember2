@@ -26,6 +26,7 @@ public class MainController {
 		
 		User user = repo.getById(id);
 		model.addAttribute("user", user);
+		model.addAttribute("title", "Edit User");
 		return "editform";
 	}
 	
@@ -33,14 +34,13 @@ public class MainController {
 	public String editUser(@ModelAttribute User userToEdit) {
 		
 		repo.save(userToEdit);
-		return "useredited";
+		return "redirect:/db/users";
 	}
 	
-	
-	
 	@RequestMapping("/db/users/add")
-	public String showUserForm() {
+	public String showUserForm(Model model) {
 		
+		model.addAttribute("title", "Add User");
 		
 		return "userform";
 	}
@@ -49,16 +49,15 @@ public class MainController {
 	public String addUser(@ModelAttribute User userToAdd) {
 		
 		repo.save(userToAdd);
-		return "useradded";
+		return "redirect:/db/users";
 	}
-	
-	
 	
 	@RequestMapping("/db/users")
 	public String getUsersFromDb(Model model) {
 		
 		List<User> users = repo.findAll();
 		
+		model.addAttribute("title", "User List");
 		model.addAttribute("users", users);
 		
 		return "userlist";
@@ -68,7 +67,7 @@ public class MainController {
 	@RequestMapping("/db/users/delete")
 	public String deleteUserConfirm(Model model, @RequestParam int id) {
 		
-		
+		model.addAttribute("title", "Confirm Delete");
 		model.addAttribute("message", "user deleted");
 		model.addAttribute("id", id);
 		return "confirmdelete";
@@ -85,7 +84,7 @@ public class MainController {
 			repo.deleteById(id);
 			
 		}
-		return "userdeleted";
+		return "redirect:/db/users";
 	}
 	
 	@RequestMapping("/db/users/{id}")
@@ -94,6 +93,7 @@ public class MainController {
 		Optional<User> result = repo.findById(id);
 		
 		model.addAttribute("user", result.get());
+		model.addAttribute("title", "User Details");
 		
 		return "userdetails";
 	}
@@ -111,6 +111,7 @@ public class MainController {
 		
 		String[] messages = {"one", "two", "three"};
 		model.addAttribute("messages", messages);
+		model.addAttribute("title", "About");
 		return "about";
 	}
 	

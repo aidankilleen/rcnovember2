@@ -1,21 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<head th:replace="fragments/navigation :: htmlhead">
 </head>
 <body>
 
-<form action="/db/users/doadd" method="post">
+	<nav th:replace="fragments/navigation :: bootstrap-navigation"></nav>
 
-	<input type="text" name="name" placeholder="Enter your name"><br>
-	<input type="text" name="email" placeholder="Enter your email"><br>
-	Active<input type="checkbox" name="active"><br>
-	
-	<input type="submit" name="submit" value="submit">
+	<div class="container">
 
-</form>
+		<div class="row">
+
+			<h1 th:text="${title}"></h1>
 
 
+		</div>
+		<div class="row">
+			<form action="/db/users/doadd" method="post">
+
+				<label for="name" class="form-label">Name</label>
+				<input type="text" class="form-control" name="name" placeholder="Enter your name">
+				
+				<label for="email" class="form-label">Email</label>
+				<input type="text" class="form-control" name="email" placeholder="Enter your email">
+				
+				<label for="active" class="form-check-label">Active</label>
+				<input type="checkbox" class="form-check-input" name="active">
+				
+				<br>
+				<input type="submit" class="btn btn-primary" name="submit" value="submit">
+
+			</form>
+
+
+		</div>
+
+	</div>
 </body>
 </html>

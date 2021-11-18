@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<head th:replace="fragments/navigation :: htmlhead">
 </head>
 <body>
 
-<H1>About</H1>
-
-
+<nav th:replace="fragments/navigation :: bootstrap-navigation"></nav>
 <ul>
 	<li 
 		th:each="message : ${messages}"

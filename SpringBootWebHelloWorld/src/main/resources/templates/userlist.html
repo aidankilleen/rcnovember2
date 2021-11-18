@@ -1,29 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<head th:replace="fragments/navigation :: htmlhead">
 </head>
 <body>
 
-<h1>User List</h1>
 
-<a href="/db/users/add">Add User</a>
+<nav th:replace="fragments/navigation :: bootstrap-navigation"></nav>
 
-<hr>
 
-<table>
+
+
+<table class="table">
 	<thead>
 		<tr>
 			<th>ID</th>
 			<th>Name</th>
 			<th>Email</th>
 			<th>Active</th>
+			<th></th>
 		</tr>
 	</thead>
 	
 	<tbody>
-		<tr th:each="user: ${users}">
+		<tr th:each="user: ${users}" th:attr="class=${user.active ? 'table-info' : ''}">
 
 			<td><a 
 				th:href="@{/db/users/{id}(id=${user.id})}" 
@@ -31,16 +30,19 @@
 			</td>
 			<td th:text="${user.name}"></td>
 			<td th:text="${user.email}"></td>
-			<td th:text="${user.active}"></td>
+			<td th:text="${user.active ? 'Active' : 'Inactive'}"></td>
 			<td>
-				<a
+				<a class="btn btn-danger"
 				th:href="@{/db/users/delete?id={id}(id=${user.id})}"
-				>Delete</a>
-			</td>
-			<td>
-				<a
+				data-bs-toggle="tooltip" data-bs-placement="top"
+				title="delete"
+				><i class="fa-solid fa-trash"></i></a>
+
+				<a class="btn btn-success"
 				th:href="@{/db/users/edit?id={id}(id=${user.id})}"
-				>Edit</a>
+				data-bs-toggle="tooltip" data-bs-placement="top"
+				title="edit"
+				><i class="fa-solid fa-user-pen"></i></a>
 			</td>			
 		</tr>
 	
@@ -49,5 +51,12 @@
 
 </table>
 
+
+<script>
+	var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+	var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+	  return new bootstrap.Tooltip(tooltipTriggerEl)
+	})
+</script>
 </body>
 </html>

@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<head th:replace="fragments/navigation :: htmlhead">
 </head>
 <body>
 
-<h1>Edit User</h1>
-
-<p th:text="${user.name}"></p>
+<nav th:replace="fragments/navigation :: bootstrap-navigation"></nav>
 
 <form action="/db/users/edit" method="post">
 
