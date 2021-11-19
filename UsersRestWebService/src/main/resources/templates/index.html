@@ -98,9 +98,14 @@ $(document).ready(function() {
 	$(document).on("click", ".btnDelete",  function(e) {
 		
 		console.log(e);
-		var id = e.currentTarget.id;
+		var buttonId = e.currentTarget.id;
 		
-		alert("you clicked a delete button:" + id);
+		var pieces = buttonId.split("_");
+		
+		var userId = pieces[1];
+		
+		
+		alert("you clicked a delete button:" + buttonId + ":" + userId);
 	});
 	
 	$(document).on("click", ".btnEdit",  function(e) {
