@@ -74,7 +74,36 @@
 		<tbody>
 		</tbody>
 	</table>
-	<script>
+	
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">User Info</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+		<label for="name" class="form-label">Name</label>
+		<input type="text" class="form-control" id="txtName" name="name" placeholder="Enter your name">
+		
+		<label for="email" class="form-label">Email</label>
+		<input type="text" class="form-control" id="txtEmail" name="email" placeholder="Enter your email">
+		
+		<label for="active" class="form-check-label">Active</label>
+		<input type="checkbox" id="chkActive" class="form-check-input" name="active">
+				
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+	
+<script>
 
 $(document).ready(function() {
 	$.getJSON("/api/users", function(data) {
@@ -82,8 +111,12 @@ $(document).ready(function() {
 		for (var j=0; j<data.length; j++) {
 			
 			$("#tblUsers tbody")
-				.append(`<tr>
-							<td>${data[j].id}</td>
+				.append(`<tr id="tr_${data[j].id}">
+							<td>
+								<button class="btn btn-info btnInfo" id="btnInfo_${data[j].id}">
+									<i class="fa-solid fa-info"></i>
+								</button> ${data[j].id}
+							</td>
 							<td>${data[j].name}</td>
 							<td>${data[j].email}</td>
 							<td>${data[j].active}</td>
@@ -95,17 +128,65 @@ $(document).ready(function() {
 		}
 	});
 	
-	$(document).on("click", ".btnDelete",  function(e) {
+	$(document).on("click", ".btnInfo", function(e) { 
 		
-		console.log(e);
 		var buttonId = e.currentTarget.id;
-		
 		var pieces = buttonId.split("_");
-		
 		var userId = pieces[1];
 		
+		$.getJSON(`/api/users/${userId}`, function(user) {
+			
+			// populate the controls in the dialog
+			$('#txtName').val(user.name);
+			$('#txtEmail').val(user.email);
+			$('#chkActive').attr("checked", user.active);
+			
+			var options = {
+					
+			};
+			
+			var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), options);
+			
+			myModal.show();
+			
+		})
+	
+	});
+	
+	
+	
+	$(document).on("click", ".btnDelete",  function(e) {
 		
-		alert("you clicked a delete button:" + buttonId + ":" + userId);
+		var buttonId = e.currentTarget.id;
+		var pieces = buttonId.split("_");
+		var userId = pieces[1];
+		
+		if (confirm("Are you sure you want to delete user " + userId)) {
+			// make an ajax call to delete this user
+			$.ajax({
+				method: "delete", 
+				url: `/api/users/${userId}`, 
+				
+				success: function() {
+					$(`#tr_${userId}`).remove();
+					alert("user deleted");
+				}, 
+				
+				error: function(error) {
+					alert("error - " + error);
+				}
+				
+			})
+			
+			
+			
+			
+		} else {
+			// alert("cancel");
+		}
+		
+		
+		
 	});
 	
 	$(document).on("click", ".btnEdit",  function(e) {
