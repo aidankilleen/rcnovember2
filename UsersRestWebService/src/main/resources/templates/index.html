@@ -42,17 +42,20 @@
 				<ul class="navbar-nav">
 					<li class="nav-item">
 						<a th:attr="class=${title == 'User List' ? 'nav-link active' : 'nav-link'}"
-							aria-current="page" href="/db/users">
+							aria-current="page" 
+							href="#">
 							Home
 						</a>
 					</li>
-					<li class="nav-item">
-						<a th:attr="class=${title == 'Add User' ? 'nav-link active' : 'nav-link'}" href="/db/users/add">
+					<li class="nav-item" id="btnAddUser_1">
+						<a th:attr="class=${title == 'Add User' ? 'nav-link active' : 'nav-link'}" 
+							href="#">
 							Add User
 						</a>
 					</li>
 					<li class="nav-item">
-						<a th:attr="class=${title == 'About' ? 'nav-link active' : 'nav-link'}" href="/about">
+						<a th:attr="class=${title == 'About' ? 'nav-link active' : 'nav-link'}" 
+							href="#">
 							About
 						</a>
 					</li>
@@ -101,6 +104,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button id="btnSave" type="button" class="btn btn-primary">Save changes</button>
+        <button id="btnCreate" type="button" class="btn btn-primary">Create User</button>
       </div>
     </div>
   </div>
@@ -112,27 +116,59 @@
 var myModal;
 
 
+function addUserToTable(tableId, user) {
+	
+	$(`#${tableId} tbody`)
+		.append(`<tr id="tr_${user.id}">
+					<td>
+						<button class="btn btn-info btnInfo" id="btnInfo_${user.id}">
+							<i class="fa-solid fa-info"></i>
+						</button> ${user.id}
+					</td>
+					<td>${user.name}</td>
+					<td>${user.email}</td>
+					<td>${user.active}</td>
+					<td>
+						<button id="btnDelete_${user.id}" class="btn btn-danger btnDelete">Delete</button>
+						<button id="btnEdit_${user.id}" class="btn btn-success btnEdit">Edit</button>
+					</td>
+				</tr>`);	
+	
+}
 $(document).ready(function() {
 	$.getJSON("/api/users", function(data) {
 
 		for (var j=0; j<data.length; j++) {
 			
-			$("#tblUsers tbody")
-				.append(`<tr id="tr_${data[j].id}">
-							<td>
-								<button class="btn btn-info btnInfo" id="btnInfo_${data[j].id}">
-									<i class="fa-solid fa-info"></i>
-								</button> ${data[j].id}
-							</td>
-							<td>${data[j].name}</td>
-							<td>${data[j].email}</td>
-							<td>${data[j].active}</td>
-							<td>
-								<button id="btnDelete_${data[j].id}" class="btn btn-danger btnDelete">Delete</button>
-								<button id="btnEdit_${data[j].id}" class="btn btn-success btnEdit">Edit</button>
-							</td>
-						</tr>`);		
+			addUserToTable("tblUsers", data[j]);
 		}
+	});
+	
+	$(document).on("click", "#btnCreate", function() {
+		
+		var user = {
+			name: $('#txtName').val(), 
+			email: $('#txtEmail').val(), 
+			active: $('#chkActive').prop("checked")
+		}
+		
+		$.ajax({
+			method: "post", 
+			url: "/api/users",
+			
+			data: JSON.stringify(user), 
+			contentType: "application/json", 
+			
+			success: function(createdUser) {
+				// add the createduser to the table
+				addUserToTable("tblUsers", createdUser);
+				
+				myModal.hide();
+			}, 
+			error: function(error) {
+				alert(error);
+			}
+		});
 	});
 	
 	$(document).on("click", "#btnSave", function() {
@@ -144,9 +180,6 @@ $(document).ready(function() {
 			email: $('#txtEmail').val(), 
 			active: $('#chkActive').prop("checked")
 		}
-		
-		console.log(user);
-
 		// make an ajax call to update
 		$.ajax({
 			method: "put", 
@@ -170,13 +203,9 @@ $(document).ready(function() {
 				myModal.hide();
 			}
 		})
-		
-		// hide the dialog
-		
-		
 	});
 	
-	$(document).on("click", ".btnInfo, .btnEdit", function(e) { 
+	$(document).on("click", ".btnInfo, .btnEdit, #btnAddUser_1", function(e) { 
 		
 		var buttonId = e.currentTarget.id;
 		var pieces = buttonId.split("_");
@@ -184,31 +213,51 @@ $(document).ready(function() {
 		
 		var isEdit = pieces[0] == "btnEdit";
 		
-		if (isEdit) {
+		if (pieces[0] == "btnEdit") {
+			
 			$('#exampleModalLabel').html("Edit User");
 			$('#btnSave').show();
-		} else {
+			$('#btnCreate').hide();
+			
+		} else if (pieces[0] == "btnInfo"){
+			
 			$('#exampleModalLabel').html("User Info");
 			$('#btnSave').hide();
+			$('#btnCreate').hide();
+		} else {
+			
+			// create
+			$('#exampleModalLabel').html("Create User");
+			$('#btnSave').hide();
+			$('#btnCreate').show();
+			
 		}
+		var options = {
+				
+		};
+		myModal = new bootstrap.Modal(document.getElementById('exampleModal'), options);
 		
-		$.getJSON(`/api/users/${userId}`, function(user) {
+		if (pieces[0] == "btnEdit" || pieces[0] == "btnInfo") {
 			
-			// populate the controls in the dialog
-			$('#txtId').val(user.id);
-			$('#txtName').val(user.name);
-			$('#txtEmail').val(user.email);
-			$('#chkActive').attr("checked", user.active);
+			$.getJSON(`/api/users/${userId}`, function(user) {
+				
+				// populate the controls in the dialog
+				$('#txtId').val(user.id);
+				$('#txtName').val(user.name);
+				$('#txtEmail').val(user.email);
+				$('#chkActive').prop("checked", user.active);
+				
+				myModal.show();
+			});	
+		} else {
 			
-			var options = {
-					
-			};
-			
-			myModal = new bootstrap.Modal(document.getElementById('exampleModal'), options);
+			$('#txtId').val(0);
+			$('#txtName').val("");
+			$('#txtEmail').val("");
+			$('#chkActive').prop("checked", false);
 			
 			myModal.show();
-			
-		})
+		}
 	
 	});
 	
@@ -221,43 +270,22 @@ $(document).ready(function() {
 		var userId = pieces[1];
 		
 		if (confirm("Are you sure you want to delete user " + userId)) {
-			// make an ajax call to delete this user
 			$.ajax({
 				method: "delete", 
 				url: `/api/users/${userId}`, 
 				
 				success: function() {
 					$(`#tr_${userId}`).remove();
-					alert("user deleted");
 				}, 
-				
 				error: function(error) {
 					alert("error - " + error);
 				}
-				
 			})
-			
-			
-			
-			
 		} else {
 			// alert("cancel");
 		}
-		
-		
-		
 	});
-
-	
 });
-
-//	 make an ajax call to the restful web service
-
-//   jQuery
-
-// JavaScript - runs in the browser
-
-
 	
 </script>
 </body>
