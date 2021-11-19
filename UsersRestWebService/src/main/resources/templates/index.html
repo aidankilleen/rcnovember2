@@ -83,6 +83,10 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+
+		<label for="name" class="form-label">Id</label>
+		<input type="text" class="form-control" id="txtId" name="id" placeholder="Enter id">
+
 		<label for="name" class="form-label">Name</label>
 		<input type="text" class="form-control" id="txtName" name="name" placeholder="Enter your name">
 		
@@ -96,7 +100,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button id="btnSave" type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
@@ -104,6 +108,9 @@
 
 	
 <script>
+
+var myModal;
+
 
 $(document).ready(function() {
 	$.getJSON("/api/users", function(data) {
@@ -128,15 +135,67 @@ $(document).ready(function() {
 		}
 	});
 	
-	$(document).on("click", ".btnInfo", function(e) { 
+	$(document).on("click", "#btnSave", function() {
+		
+		// read the values from the controls
+		var user = {
+			id: $('#txtId').val(), 
+			name: $('#txtName').val(), 
+			email: $('#txtEmail').val(), 
+			active: $('#chkActive').prop("checked")
+		}
+		
+		console.log(user);
+
+		// make an ajax call to update
+		$.ajax({
+			method: "put", 
+			url: `/api/users/${user.id}`, 
+			
+			data: JSON.stringify(user), 
+			contentType: "application/json", 
+			
+			success: function() {
+				
+				// update the ui
+				$(`#tr_${user.id} td:nth-child(2)`).html(user.name);
+				$(`#tr_${user.id} td:nth-child(3)`).html(user.email);
+				$(`#tr_${user.id} td:nth-child(4)`).html(user.active ? "true" : "false");
+				
+				myModal.hide();
+			}, 
+			
+			error: function(error) {
+				alert(error);
+				myModal.hide();
+			}
+		})
+		
+		// hide the dialog
+		
+		
+	});
+	
+	$(document).on("click", ".btnInfo, .btnEdit", function(e) { 
 		
 		var buttonId = e.currentTarget.id;
 		var pieces = buttonId.split("_");
 		var userId = pieces[1];
 		
+		var isEdit = pieces[0] == "btnEdit";
+		
+		if (isEdit) {
+			$('#exampleModalLabel').html("Edit User");
+			$('#btnSave').show();
+		} else {
+			$('#exampleModalLabel').html("User Info");
+			$('#btnSave').hide();
+		}
+		
 		$.getJSON(`/api/users/${userId}`, function(user) {
 			
 			// populate the controls in the dialog
+			$('#txtId').val(user.id);
 			$('#txtName').val(user.name);
 			$('#txtEmail').val(user.email);
 			$('#chkActive').attr("checked", user.active);
@@ -145,7 +204,7 @@ $(document).ready(function() {
 					
 			};
 			
-			var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), options);
+			myModal = new bootstrap.Modal(document.getElementById('exampleModal'), options);
 			
 			myModal.show();
 			
@@ -188,12 +247,7 @@ $(document).ready(function() {
 		
 		
 	});
-	
-	$(document).on("click", ".btnEdit",  function(e) {
-		
-		
-		alert("you clicked an edit button");
-	});
+
 	
 });
 
